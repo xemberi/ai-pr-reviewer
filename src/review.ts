@@ -727,6 +727,10 @@ ${
 
   // post the final summary comment
   await commenter.comment(`${summarizeComment}`, SUMMARIZE_TAG, 'replace')
+  await commenter.updateDescription(
+    context.payload.pull_request.number,
+    summarizeComment
+  )
 }
 
 const splitPatch = (patch: string | null | undefined): string[] => {
