@@ -9,8 +9,7 @@ const repo = context.repo
 
 export const COMMENT_GREETING = `${getInput('bot_icon')}   PRBot`
 
-export const COMMENT_TAG =
-  '<!-- This is an auto-generated comment by PRBot -->'
+export const COMMENT_TAG = '<!-- This is an auto-generated comment by PRBot -->'
 
 export const COMMENT_REPLY_TAG =
   '<!-- This is an auto-generated reply by PRBot -->'

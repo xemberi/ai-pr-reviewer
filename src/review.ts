@@ -421,6 +421,8 @@ ${filename}: ${summary}
     info('summarize: nothing obtained from openai')
   }
 
+  let releaseNotesReponseGlobal
+
   if (options.disableReleaseNotes === false) {
     // final release notes
     const [releaseNotesResponse] = await heavyBot.chat(
@@ -430,6 +432,7 @@ ${filename}: ${summary}
     if (releaseNotesResponse === '') {
       info('release notes: nothing obtained from openai')
     } else {
+      releaseNotesReponseGlobal = releaseNotesResponse
       let message = '### Summary\n\n'
       message += releaseNotesResponse
       try {
@@ -726,7 +729,10 @@ ${
   }
 
   // post the final summary comment
-  await commenter.comment(`${summarizeComment}`, SUMMARIZE_TAG, 'replace')
+  // Frank: disable comment, enable putting in the description
+  // await commenter.comment(`${summarizeComment}`, SUMMARIZE_TAG, 'replace')
+  const releaseNotesSummary = `### Release Notes\n\n${releaseNotesReponseGlobal}`
+  summarizeComment += releaseNotesSummary
   await commenter.updateDescription(
     context.payload.pull_request.number,
     summarizeComment
