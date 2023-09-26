@@ -435,14 +435,15 @@ ${filename}: ${summary}
       releaseNotesReponseGlobal = releaseNotesResponse
       let message = '### Summary\n\n'
       message += releaseNotesResponse
-      try {
-        await commenter.updateDescription(
-          context.payload.pull_request.number,
-          message
-        )
-      } catch (e: any) {
-        warning(`release notes: error from github: ${e.message as string}`)
-      }
+      info(`not using messages for now: ${message}`)
+      // try {
+      //   await commenter.updateDescription(
+      //     context.payload.pull_request.number,
+      //     message
+      //   )
+      // } catch (e: any) {
+      //   warning(`release notes: error from github: ${e.message as string}`)
+      // }
     }
   }
 
@@ -730,7 +731,8 @@ ${
   // Frank: disable comment, enable putting in the description
   // await commenter.comment(`${summarizeComment}`, SUMMARIZE_TAG, 'replace')
   const releaseNotesSummary = `\n## Release Notes\n\n${releaseNotesReponseGlobal}`
-  summarizeComment += releaseNotesSummary
+  const cleanedReleaseNotesSummary = releaseNotesSummary.replace(/---/g, '')
+  summarizeComment += cleanedReleaseNotesSummary
   await commenter.updateDescription(
     context.payload.pull_request.number,
     summarizeComment
