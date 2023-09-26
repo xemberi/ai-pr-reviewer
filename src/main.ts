@@ -35,10 +35,7 @@ async function run(): Promise<void> {
   // print options
   options.print()
 
-  const prompts: Prompts = new Prompts(
-    getInput('summarize'),
-    getInput('summarize_release_notes')
-  )
+  const prompts: Prompts = new Prompts(getInput('summarize_release_notes'))
 
   // Create two bots, one for summary and one for review
 
