@@ -460,8 +460,6 @@ ${RAW_SUMMARY_END_TAG}
 ${SHORT_SUMMARY_START_TAG}
 ${inputs.shortSummary}
 ${SHORT_SUMMARY_END_TAG}
-
----
 `
 
   statusMsg += `
@@ -731,7 +729,7 @@ ${
   // post the final summary comment
   // Frank: disable comment, enable putting in the description
   // await commenter.comment(`${summarizeComment}`, SUMMARIZE_TAG, 'replace')
-  const releaseNotesSummary = `### Release Notes\n\n${releaseNotesReponseGlobal}`
+  const releaseNotesSummary = `\n## Release Notes\n\n${releaseNotesReponseGlobal}`
   summarizeComment += releaseNotesSummary
   await commenter.updateDescription(
     context.payload.pull_request.number,
