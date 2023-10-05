@@ -37,7 +37,8 @@ export const codeReview = async (
 
   if (
     context.eventName !== 'pull_request' &&
-    context.eventName !== 'pull_request_target'
+    context.eventName !== 'pull_request_target' &&
+    context.eventName !== 'issue_comment'
   ) {
     warning(
       `Skipped: current event is ${context.eventName}, only support pull_request event`
