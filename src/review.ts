@@ -51,6 +51,10 @@ export const codeReview = async (
       repo: context.payload.repository?.name ?? '',
       pull_number: context.payload.issue?.number ?? 0
     })
+    context.payload.pull_request = {
+      ...pullRequest,
+      body: pullRequest.body ?? ''
+    }
     warning(`PR info: ${JSON.stringify(pullRequest)}`)
   }
   if (context.payload.pull_request == null) {
