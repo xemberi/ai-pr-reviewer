@@ -45,6 +45,14 @@ export const codeReview = async (
     )
     return
   }
+  if (context.eventName === 'issue_comment') {
+    const {data: pullRequest} = await octokit.rest.pulls.get({
+      owner: context.payload.repository?.owner?.login ?? '',
+      repo: context.payload.repository?.name ?? '',
+      pull_number: context.payload.issue?.number ?? 0
+    })
+    warning(`PR info: ${JSON.stringify(pullRequest)}`)
+  }
   if (context.payload.pull_request == null) {
     warning('Skipped: context.payload.pull_request is null')
     return
