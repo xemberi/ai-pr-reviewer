@@ -49,13 +49,13 @@ export const codeReview = async (
     const {data: pullRequest} = await octokit.rest.pulls.get({
       owner: context.payload.repository?.owner?.login ?? '',
       repo: context.payload.repository?.name ?? '',
+      // eslint-disable-next-line camelcase
       pull_number: context.payload.issue?.number ?? 0
     })
     context.payload.pull_request = {
       ...pullRequest,
       body: pullRequest.body ?? ''
     }
-    warning(`PR info: ${JSON.stringify(pullRequest)}`)
   }
   if (context.payload.pull_request == null) {
     warning('Skipped: context.payload.pull_request is null')
@@ -309,13 +309,13 @@ ${
 `
 
   // update the existing comment with in progress status
-  const inProgressSummarizeCmt = commenter.addInProgressStatus(
-    existingSummarizeCmtBody,
-    statusMsg
-  )
+  // const inProgressSummarizeCmt = commenter.addInProgressStatus(
+  //   existingSummarizeCmtBody,
+  //   statusMsg
+  // )
 
   // add in progress status to the summarize comment
-  await commenter.comment(`${inProgressSummarizeCmt}`, SUMMARIZE_TAG, 'replace')
+  //await commenter.comment(`${inProgressSummarizeCmt}`, SUMMARIZE_TAG, 'replace')
 
   const summariesFailed: string[] = []
 
