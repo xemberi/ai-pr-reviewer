@@ -33,6 +33,7 @@ inputs:
       - https://github.com/isaacs/minimatch
     default: |
       !dist/**
+      !expiriments/**
       !**/*.app
       !**/*.bin
       !**/*.bz2
@@ -156,7 +157,7 @@ inputs:
   openai_heavy_model:
     required: false
     description: 'Model to use for complex tasks such as code reviews.'
-    default: 'gpt-4'
+    default: 'gpt-4-1106-preview'
   openai_model_temperature:
     required: false
     description: 'Temperature for GPT model'
