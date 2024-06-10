@@ -48,6 +48,11 @@ export class Prompts {
   - **Checklist reviewer**: A checklist with the following items:
     I have reviewed the code, and either no further changes were needed, or my feedback was discussed and/or implemented.
     All of the points in the submitters checklist are properly handled.
+  - **Document updates**: A checklist with the following items:
+    SDD-001 (Software Detailed Description)
+    SAD-001 (Software Architecture Diagram)
+    SOUP-001 (External Libraries)
+    FMEA-002 (Risk)
 
   Avoid additional commentary as this summary will be added as a comment on the 
   GitHub pull request. Use the respective titles and they must be H2.
