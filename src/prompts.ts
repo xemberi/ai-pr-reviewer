@@ -26,7 +26,7 @@ export class Prompts {
   - **Context**: This should include three lines. The first is literally 'Closes #' and is to be filled in by the coder. 
     The second is 'Version bump: ' and is either #major, #minor or #patch which you have to determine based on the changes. 
     The third is literally 'Emergency change: Yes/No', to be filled in by the coder.
-  - **Validation**: The steps to be taken on the staging environment to validate the changes.
+  - **Validation**: The steps to be taken on the staging environment to validate the changes. Formulate them as integration tests and make it a checklist.
   - **Checklist**: A checklist of the following items. If you judge the item to be sufficiently done, please check the checkbox:
     My changes adhere to the coding standards and best practices established in the Code Review Guidelines.
     I have performed a self-review of my own code.
