@@ -110,7 +110,6 @@ inputs:
       !**/*.mod
       !**/*.sum
       !**/*.work
-      !**/*.json
       !**/*.mmd
       !**/*.svg
       !**/*.jpeg
