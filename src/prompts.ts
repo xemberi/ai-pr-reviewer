@@ -22,7 +22,7 @@ export class Prompts {
     If possible, perform a load test or similar to measure the impact.
     Consider the trade-offs between the benefits of your changes and the potential performance impact.
     If the impact is significant, consider ways to optimize your changes.
-  - **Compliance impact**: Below the performance impact, include a compliance impact assessment. Describe how the changes affect compliance with PIPEDA, GDPR, HIPAA, SOC2 and ISO27001. If this needs signing off or checking by QA/compliance, please tag @compliance here.
+  - **Compliance impact**: Below the performance impact, include a compliance impact assessment. Describe how the changes affect compliance with PIPEDA, GDPR, HIPAA, SOC2 and ISO27001. Also list the UDI: (01) 00628774533007 (8012). 
   - **Context**: This should include three lines. The first is literally 'Closes #' and is to be filled in by the coder. 
     The second is 'Version bump: ' and is either #major, #minor or #patch which you have to determine based on the changes. 
     The third is literally 'Emergency change: Yes/No', to be filled in by the coder.
