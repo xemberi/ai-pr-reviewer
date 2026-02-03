@@ -1789,7 +1789,7 @@ const supportedSchemas = new Set(['data:', 'http:', 'https:']);
  * @param   {*} [options_] - Fetch options
  * @return  {Promise<import('./response').default>}
  */
-async function fetch(url, options_) {
+async function src_fetch(url, options_) {
 	return new Promise((resolve, reject) => {
 		// Build request object
 		const request = new Request(url, options_);
@@ -1977,7 +1977,7 @@ async function fetch(url, options_) {
 						}
 
 						// HTTP-redirect fetch step 15
-						resolve(fetch(new Request(locationURL, requestOptions)));
+						resolve(src_fetch(new Request(locationURL, requestOptions)));
 						finalize();
 						return;
 					}
@@ -2164,7 +2164,7 @@ function fixResponseChunkedTransferBadEnding(request, errorCallback) {
 // fetch-polyfill.js
 
 if (!globalThis.fetch) {
-    globalThis.fetch = fetch;
+    globalThis.fetch = src_fetch;
     globalThis.Headers = Headers;
     globalThis.Request = Request;
     globalThis.Response = Response;
@@ -3786,39 +3786,37 @@ async function pRetry(input, options) {
 class Bot {
     api = null; // not free
     options;
+    model;
+    responseTokens;
     constructor(options, openaiOptions) {
         this.options = options;
+        this.model = openaiOptions.model;
+        this.responseTokens = openaiOptions.tokenLimits.responseTokens;
         if (process.env.OPENAI_API_KEY) {
             const currentDate = new Date().toISOString().split('T')[0];
-            const systemMessage = `${options.systemMessage} 
+            const systemMessage = `${options.systemMessage}
 Knowledge cutoff: ${openaiOptions.tokenLimits.knowledgeCutOff}
 Current date: ${currentDate}
 
 IMPORTANT: Entire response must be in the language with ISO code: ${options.language}
 `;
-            const usesMaxCompletionTokens = openaiOptions.model.startsWith('gpt-5.2') ||
-                openaiOptions.model.startsWith('gpt-5');
+            const usesResponsesApi = this.model.startsWith('gpt-5');
             const completionParams = {
                 temperature: options.openaiModelTemperature,
-                model: openaiOptions.model
+                model: this.model
             };
-            if (usesMaxCompletionTokens) {
-                completionParams.max_completion_tokens =
-                    openaiOptions.tokenLimits.responseTokens;
+            if (!usesResponsesApi) {
+                this.api = new ChatGPTAPI({
+                    apiBaseUrl: options.apiBaseUrl,
+                    systemMessage,
+                    apiKey: process.env.OPENAI_API_KEY,
+                    apiOrg: process.env.OPENAI_API_ORG ?? undefined,
+                    debug: options.debug,
+                    maxModelTokens: openaiOptions.tokenLimits.maxTokens,
+                    maxResponseTokens: openaiOptions.tokenLimits.responseTokens,
+                    completionParams
+                });
             }
-            const apiOptions = {
-                apiBaseUrl: options.apiBaseUrl,
-                systemMessage,
-                apiKey: process.env.OPENAI_API_KEY,
-                apiOrg: process.env.OPENAI_API_ORG ?? undefined,
-                debug: options.debug,
-                maxModelTokens: openaiOptions.tokenLimits.maxTokens,
-                completionParams
-            };
-            if (!usesMaxCompletionTokens) {
-                apiOptions.maxResponseTokens = openaiOptions.tokenLimits.responseTokens;
-            }
-            this.api = new ChatGPTAPI(apiOptions);
         }
         else {
             const err = "Unable to initialize the OpenAI API, both 'OPENAI_API_KEY' environment variable are not available";
@@ -3845,6 +3843,7 @@ IMPORTANT: Entire response must be in the language with ISO code: ${options.lang
             return ['', {}];
         }
         let response;
+        let responseText = '';
         if (this.api != null) {
             const opts = {
                 timeoutMs: this.options.openaiTimeoutMS
@@ -3866,14 +3865,26 @@ IMPORTANT: Entire response must be in the language with ISO code: ${options.lang
             (0,core.info)(`response: ${JSON.stringify(response)}`);
             (0,core.info)(`openai sendMessage (including retries) response time: ${end - start} ms`);
         }
+        else if (this.model.startsWith('gpt-5')) {
+            try {
+                responseText = await this.sendResponsesApiMessage(message);
+            }
+            catch (e) {
+                if (e instanceof ChatGPTError) {
+                    (0,core.warning)(`Failed to chat: ${e}, backtrace: ${e.stack}`);
+                }
+                else {
+                    (0,core.warning)(`Failed to chat: ${e}`);
+                }
+            }
+        }
         else {
             (0,core.setFailed)('The OpenAI API is not initialized');
         }
-        let responseText = '';
         if (response != null) {
             responseText = response.text;
         }
-        else {
+        else if (responseText.length === 0) {
             (0,core.warning)('openai response is null');
         }
         // remove the prefix "with " in the response
@@ -3888,6 +3899,50 @@ IMPORTANT: Entire response must be in the language with ISO code: ${options.lang
             conversationId: response?.conversationId
         };
         return [responseText, newIds];
+    };
+    sendResponsesApiMessage = async (message) => {
+        const headers = {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
+        };
+        if (process.env.OPENAI_API_ORG) {
+            headers['OpenAI-Organization'] = process.env.OPENAI_API_ORG;
+        }
+        const body = {
+            model: this.model,
+            input: message,
+            temperature: this.options.openaiModelTemperature,
+            max_output_tokens: this.responseTokens
+        };
+        const response = await fetch(`${this.options.apiBaseUrl}/responses`, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(body)
+        });
+        if (!response.ok) {
+            const reason = await response.text();
+            throw new ChatGPTError(`OpenAI error ${response.status}: ${reason}`);
+        }
+        const payload = await response.json();
+        if (typeof payload.output_text === 'string') {
+            return payload.output_text;
+        }
+        if (Array.isArray(payload.output)) {
+            const textParts = [];
+            for (const item of payload.output) {
+                if (item?.type === 'message' && Array.isArray(item.content)) {
+                    for (const content of item.content) {
+                        if (content?.type === 'output_text' && content.text) {
+                            textParts.push(content.text);
+                        }
+                    }
+                }
+            }
+            if (textParts.length > 0) {
+                return textParts.join('');
+            }
+        }
+        return '';
     };
 }
 
