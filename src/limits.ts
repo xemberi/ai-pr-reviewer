@@ -6,7 +6,11 @@ export class TokenLimits {
 
   constructor(model = 'gpt-3.5-turbo') {
     this.knowledgeCutOff = '2021-09-01'
-    if (model === 'gpt-4-32k') {
+    if (model === 'gpt-5.2' || model === 'gpt-5.2-2025-12-11') {
+      this.maxTokens = 400000
+      this.responseTokens = 128000
+      this.knowledgeCutOff = '2025-08-31'
+    } else if (model === 'gpt-4-32k') {
       this.maxTokens = 32600
       this.responseTokens = 4000
     } else if (model === 'gpt-3.5-turbo-16k') {
