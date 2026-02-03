@@ -26,26 +26,39 @@ export class Bot {
     this.options = options
     if (process.env.OPENAI_API_KEY) {
       const currentDate = new Date().toISOString().split('T')[0]
-      const systemMessage = `${options.systemMessage} 
+      const systemMessage = `${options.systemMessage}
 Knowledge cutoff: ${openaiOptions.tokenLimits.knowledgeCutOff}
 Current date: ${currentDate}
 
 IMPORTANT: Entire response must be in the language with ISO code: ${options.language}
 `
 
-      this.api = new ChatGPTAPI({
+      const usesMaxCompletionTokens =
+        openaiOptions.model.startsWith('gpt-5.2') ||
+        openaiOptions.model.startsWith('gpt-5')
+      const completionParams: Record<string, unknown> = {
+        temperature: options.openaiModelTemperature,
+        model: openaiOptions.model
+      }
+      if (usesMaxCompletionTokens) {
+        completionParams.max_completion_tokens =
+          openaiOptions.tokenLimits.responseTokens
+      }
+
+      const apiOptions: Record<string, unknown> = {
         apiBaseUrl: options.apiBaseUrl,
         systemMessage,
         apiKey: process.env.OPENAI_API_KEY,
         apiOrg: process.env.OPENAI_API_ORG ?? undefined,
         debug: options.debug,
         maxModelTokens: openaiOptions.tokenLimits.maxTokens,
-        maxResponseTokens: openaiOptions.tokenLimits.responseTokens,
-        completionParams: {
-          temperature: options.openaiModelTemperature,
-          model: openaiOptions.model
-        }
-      })
+        completionParams
+      }
+      if (!usesMaxCompletionTokens) {
+        apiOptions.maxResponseTokens = openaiOptions.tokenLimits.responseTokens
+      }
+
+      this.api = new ChatGPTAPI(apiOptions as any)
     } else {
       const err =
         "Unable to initialize the OpenAI API, both 'OPENAI_API_KEY' environment variable are not available"
