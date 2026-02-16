@@ -54,9 +54,7 @@ export class Prompts {
   - **Document updates**: A checklist with the following items:
     SDD-001 (Software Detailed Description) (https://docs.google.com/spreadsheets/d/1mBWtUbx23l-wRyV_IcPluY7WFJS3fhMWYg_ISM3lR8s/edit#gid=549921701)
     SAD-001 (Software Architecture Diagram) (https://docs.google.com/document/d/1ZdyjLKlnjipOp-oT8trxOTC94i1tBY9-/)
-    SOUP-001 (External Libraries) (https://docs.google.com/spreadsheets/d/1Ogf8dg9cCk7oELO1L8J58iMQVB386VadONhUwkmI9pc/edit#gid=0)
-    FMEA-001 (Software Risk) (https://docs.google.com/spreadsheets/d/1EZwVVom88XWk9CLskjBhFbn1-BgbvTak/edit#gid=1622974018)
-    FMEA-002 (Cybersecurity Risk) (https://docs.google.com/spreadsheets/d/1IlfDs-0TrM7ycPJOsLgriu5e7S5zRohU/edit#gid=1890818202)
+    Ketryx SBOM
 
   Avoid additional commentary as this summary will be added as a comment on the 
   GitHub pull request. Use the respective titles and they must be H2.
