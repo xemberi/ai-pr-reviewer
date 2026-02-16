@@ -6801,6 +6801,9 @@ class Prompts {
     I understand that my changes may require updates to business continuity plans, if applicable.
     I have informed appropriate parties in case of changed functionality which may require additional training or instructions.
     I have informed appropriate parties in case of potential downtime coming from this change.
+    Test plan in Ketryx has been approved.
+    UDI updated (in case of mobile app).
+    All changes have been deployed to staging and tested.
   - **Testing**: A checklist with the following items:
     Unit tests have passed. (check this item)
     Integration tests have passed.
