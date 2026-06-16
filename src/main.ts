@@ -76,7 +76,13 @@ async function run(): Promise<void> {
     } else if (
       process.env.GITHUB_EVENT_NAME === 'pull_request_review_comment'
     ) {
-      await handleReviewComment(heavyBot, options, prompts)
+      if (options.disableReview) {
+        warning(
+          'Skipped: review comments are disabled; only PR template generation is enabled'
+        )
+      } else {
+        await handleReviewComment(heavyBot, options, prompts)
+      }
     } else {
       warning('Skipped: this action only works on push events or pull_request')
     }

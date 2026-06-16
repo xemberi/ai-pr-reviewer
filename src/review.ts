@@ -338,7 +338,7 @@ ${
     // render prompt based on inputs so far
     const summarizePrompt = prompts.renderSummarizeFileDiff(
       ins,
-      options.reviewSimpleChanges
+      options.reviewSimpleChanges || options.disableReview
     )
     const tokens = getTokenCount(summarizePrompt)
 

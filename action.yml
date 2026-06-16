@@ -139,7 +139,7 @@ inputs:
   disable_review:
     required: false
     description: 'Only provide the summary and skip the code review.'
-    default: 'false'
+    default: 'true'
   disable_release_notes:
     required: false
     description: 'Disable release notes'

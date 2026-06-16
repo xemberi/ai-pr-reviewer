@@ -4730,7 +4730,12 @@ async function run() {
             await (0,_review__WEBPACK_IMPORTED_MODULE_3__/* .codeReview */ .z)(lightBot, heavyBot, options, prompts);
         }
         else if (process.env.GITHUB_EVENT_NAME === 'pull_request_review_comment') {
-            await (0,_review_comment__WEBPACK_IMPORTED_MODULE_4__/* .handleReviewComment */ .V)(heavyBot, options, prompts);
+            if (options.disableReview) {
+                (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.warning)('Skipped: review comments are disabled; only PR template generation is enabled');
+            }
+            else {
+                await (0,_review_comment__WEBPACK_IMPORTED_MODULE_4__/* .handleReviewComment */ .V)(heavyBot, options, prompts);
+            }
         }
         else {
             (0,_actions_core__WEBPACK_IMPORTED_MODULE_0__.warning)('Skipped: this action only works on push events or pull_request');
@@ -7632,7 +7637,7 @@ ${filterIgnoredFiles.length > 0
         ins.filename = filename;
         ins.fileDiff = fileDiff;
         // render prompt based on inputs so far
-        const summarizePrompt = prompts.renderSummarizeFileDiff(ins, options.reviewSimpleChanges);
+        const summarizePrompt = prompts.renderSummarizeFileDiff(ins, options.reviewSimpleChanges || options.disableReview);
         const tokens = (0,tokenizer/* getTokenCount */.V)(summarizePrompt);
         if (tokens > options.lightTokenLimits.requestTokens) {
             (0,core.info)(`summarize: diff tokens exceeds limit, skip ${filename}`);
